@@ -2,9 +2,8 @@
  
 namespace App\Http\Controllers;
  
-use App\Producto;
+use App\Models\Producto;
 use DB;
-use Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -28,11 +27,10 @@ class ImportarController extends Controller
         ]);
  
         $path = $request->file('importar_csv')->getRealPath();
-        $data = Excel::import($path);
- 
-        if($data->count()){
-            foreach ($data as $key => $value) {
-
+        
+        $data = fopen($path, "r");
+        
+            while (($value = fgetcsv($data,1000,',','"')) !== false) {
                 switch($value[1]) {
                     case 'Agregar':
                             $this->agregar($value[0],$value[2]);
@@ -47,32 +45,32 @@ class ImportarController extends Controller
                             $this->desactivar($value[0]);
                         break;
                 }
-
-                //$arr[] = ['title' => $value->title, 'description' => $value->description];
-            
             }
- 
-            /*if(!empty($arr)){
-                Item::insert($arr);
-            }*/
-        }
  
         return back()->with('success', 'Archivo importado correctamente');
     }
 
     public function agregar($id,$cantidad){
-        Log::debug($id.$cantidad);
+        $p = Producto::find($id);
+        $p->unidades_actuales = $p->unidades_actuales + $cantidad;
+        $p->save();
     }
 
     public function restar($id,$cantidad){
-        Log::debug($id.$cantidad);
+        $p = Producto::find($id);
+        $p->unidades_actuales = $p->unidades_actuales - $cantidad;
+        $p->save();
     }
 
     public function activar($id){
-        Log::debug($id);
+        $p = Producto::find($id);
+        $p->estado_id = 1;
+        $p->save();
     }
 
     public function desactivar($id){
-        Log::debug($id);
+        $p = Producto::find($id);
+        $p->estado_id = 2;
+        $p->save();
     }
 }
