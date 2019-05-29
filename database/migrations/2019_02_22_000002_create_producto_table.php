@@ -15,11 +15,12 @@ class CreateProductoTable extends Migration
     {
         Schema::create('producto', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedTinyInteger('estado_id');
+            $table->boolean('compuesto');
             $table->string('nombre');
             $table->string('referencia');
             $table->integer('precio');
-            $table->integer('unidades_actuales');
-            $table->unsignedTinyInteger('estado_id');
+            $table->integer('unidades_actuales');            
             $table->timestamps();
 
             $table->foreign('estado_id')->references('id')->on('estado');
