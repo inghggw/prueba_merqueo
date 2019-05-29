@@ -16,7 +16,7 @@ class CreateProductoTable extends Migration
         Schema::create('producto', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedTinyInteger('estado_id');
-            $table->boolean('compuesto');
+            $table->boolean('compuesto')->default(false);
             $table->string('nombre');
             $table->string('referencia');
             $table->integer('precio');
